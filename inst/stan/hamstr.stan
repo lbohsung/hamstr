@@ -9,14 +9,14 @@ data{
   real min_age;
   
   // resolution of age-depth model
-  int<lower = 1> n_lvls; // number of hierarchical levels, not including overall mean
-  int<lower=0> K_fine;  // number of highest resolution sections
-  int<lower=0> K_tot;  // total no of gamma parameters
+  int<lower=1> n_lvls; // number of hierarchical levels, not including overall mean
+  int<lower=0> K_fine; // number of highest resolution sections
+  int<lower=0> K_tot; // total no of gamma parameters
   
-  int parent1[K_tot-1]; // index sections to their parent sections 2 row matrix
+  array[K_tot-1] int parent1;
   vector[K_tot-1] wts1; // weights of parents
   
-  int parent2[K_tot-1]; // index sections to their parent sections 2 row matrix
+  array[K_tot-1] int parent2;
   vector[K_tot-1] wts2; // weights of parents
   
   // modelled depths
@@ -45,7 +45,7 @@ data{
   // observation error model parameters
   
   int<lower=0> nu; // degrees of freedom of t error distribution
-  int which_c[N]; // index observations to their fine sections
+  array[N] int which_c;
   
   int<lower=0, upper=1> scale_R; // scale the AR1 coefficient or not
   int<lower=0, upper=1> inflate_errors; // use error inflation model or not
@@ -64,7 +64,7 @@ data{
   int<lower=0, upper=1> model_bioturbation;
   
   int<lower=0> I;
-  int smooth_i[I, N];
+  array[I, N] int smooth_i;
   
   real<lower = 0> L_prior_mean;
   real<lower = 0> L_prior_shape;
@@ -92,7 +92,6 @@ transformed data{
   
   // inverse scale of the prior on L
   real L_rate;
-  //real D_rate;
   
   int<lower = 0, upper = 1> sample_L;
   
@@ -119,11 +118,7 @@ transformed data{
     sample_L = 0;
   } else {
     sample_L = 1;
-  }
-  
-  
-  //D_rate = 1/D_prior_scale;
-  
+  }  
   
 }
 parameters {
@@ -139,19 +134,18 @@ parameters {
   // the measurement error inflation factors
   // these have length 0 if inflate_errors == 0 meaning that the parameters are
   // in scope, so the model runs, but are zero length so nothing is sampled
-  real<lower = 0> infl_mean[inflate_errors];
-  real<lower = 0> infl_shape_1[inflate_errors];
+  array[inflate_errors] real<lower = 0> infl_mean;
+  array[inflate_errors] real<lower = 0> infl_shape_1;
   vector<lower = 0>[inflate_errors ? N : 0] infl;
   
-  
-  real<lower = 0> L[model_bioturbation * sample_L];
+  array[model_bioturbation * sample_L] real<lower = 0> L;
   
   vector<lower = 0>[model_bioturbation ? N : 0] bt_error;
   
-  real<lower = 0> D[model_displacement];
+  array[model_displacement] real<lower = 0> D;
   
-  real<lower = H_top, upper = H_bottom> H_depth[model_hiatus];
-  real<lower = 0, upper = data_age_range> H_length[model_hiatus];
+  array[model_hiatus] real<lower = H_top, upper = H_bottom> H_depth;
+  array[model_hiatus] real<lower = 0, upper = data_age_range> H_length;
 }
 
 transformed parameters{
@@ -169,13 +163,11 @@ transformed parameters{
   vector[N] Mod_age;
   
   // the inflated observation errors
-  real<lower = 0> infl_shape[inflate_errors];
+  array[inflate_errors] real<lower = 0> infl_shape;
   
   vector[(inflate_errors == 1 || model_displacement == 1) ? N : 0] obs_err_infl;
-  //vector[model_displacement ? N : 0] disp_err;
   
   // latent bioturbation corrected age
-  //vector[model_bioturbation ? N : 0] bt_age;
   vector[model_bioturbation ? N : 0] bt_age;
   vector[(model_bioturbation == 1 || model_displacement == 1) ? N : 0] smooth_x;
   
@@ -183,7 +175,6 @@ transformed parameters{
   vector[model_bioturbation ? N : 0] age_het;
   
   vector<lower = 0>[model_displacement ? N : 0] disp_yrs;
-  
  
   if (scale_R == 1){
     w = R^(delta_c);
@@ -204,7 +195,6 @@ transformed parameters{
   // the cumulative sum of the highest resolution innovations
   c_ages[1] = age0;
   c_ages[2:(K_fine+1)] = age0 + cumulative_sum(x * delta_c);
-  
   
   
   // hiatus vector
@@ -258,7 +248,6 @@ transformed parameters{
     infl_shape[1] = infl_shape_1[1] + 1;
   } else if (inflate_errors == 1 && model_displacement == 0){
     for (n in 1:N)
-    //obs_err_infl[n] = obs_err[n] + infl_sigma[1] * infl[n];
     obs_err_infl[n] = sqrt((obs_err[n])^2 + (infl[n])^2);
     infl_shape[1] = infl_shape_1[1] + 1;
   } else if (inflate_errors == 0 && model_displacement == 1){
