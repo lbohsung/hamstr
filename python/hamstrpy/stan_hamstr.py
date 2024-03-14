@@ -6,7 +6,9 @@ from cmdstanpy import CmdStanModel
 
 import datetime
 
-from make_stan_dat_hamstr import make_stan_dat_hamstr, get_inits_hamstr
+from .make_stan_dat_hamstr import make_stan_dat_hamstr, get_inits_hamstr
+
+here = os.path.abspath(os.path.dirname(__file__))
 
 
 def hamstr(
@@ -83,7 +85,7 @@ def hamstr(
         get_inits_hamstr(stan_dat) for _ in range(used_sampler_args['chains'])
     ]
 
-    model = CmdStanModel(stan_file="../inst/stan/hamstr.stan")
+    model = CmdStanModel(stan_file=os.path.join(here, "hamstr.stan"))
     fit = None
     if sample_posterior:
         fit = model.sample(
