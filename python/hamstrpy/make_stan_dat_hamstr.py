@@ -4,7 +4,6 @@ from scipy.optimize import minimize_scalar
 import statsmodels
 from statsmodels.formula.api import rlm
 import statsmodels.api as sm
-from scipy import stats
 
 
 def make_stan_dat_hamstr(**kwargs):
@@ -197,7 +196,7 @@ def GetBrksHalfOffset(K_fine, K_factor):
         else:
             new_strt = strt - db * (d_new_old) / 2
         newbrks = np.arange(new_strt, new_strt + db * K_factor * n_new, db * K_factor)
-        newbrks = np.append(newbrks, new_strt + db * K_factor * n_new) 
+        newbrks = np.append(newbrks, new_strt + db * K_factor * n_new)
         brks.append(newbrks)
         db = K_factor * db
         n_br = len(newbrks)
