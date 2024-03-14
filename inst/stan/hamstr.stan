@@ -12,17 +12,10 @@ data{
   int<lower=1> n_lvls; // number of hierarchical levels, not including overall mean
   int<lower=0> K_fine; // number of highest resolution sections
   int<lower=0> K_tot; // total no of gamma parameters
-<<<<<<< HEAD
 
   array[K_tot-1] int parent1;
   vector[K_tot-1] wts1; // weights of parents
 
-=======
-
-  array[K_tot-1] int parent1;
-  vector[K_tot-1] wts1; // weights of parents
-
->>>>>>> stan_update
   array[K_tot-1] int parent2;
   vector[K_tot-1] wts2; // weights of parents
 
@@ -53,11 +46,6 @@ data{
 
   int<lower=0> nu; // degrees of freedom of t error distribution
   array[N] int which_c;
-<<<<<<< HEAD
-
-=======
-
->>>>>>> stan_update
   int<lower=0, upper=1> scale_R; // scale the AR1 coefficient or not
   int<lower=0, upper=1> inflate_errors; // use error inflation model or not
 
