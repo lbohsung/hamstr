@@ -53,8 +53,6 @@ setup(
         'hamstrpy': ['hamstr.stan'],
     },
     include_package_data=True,
-    install_requires=[
-    ],
     classifiers=[
         'Programming Language :: Python :: 3 :: Only',
     ],
