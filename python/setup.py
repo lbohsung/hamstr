@@ -49,6 +49,13 @@ setup(
     author='A. Dolman',
     author_email='andrew.dolman@awi.de',
     packages=find_packages(),
+    install_requires=[
+        'cmdstanpy',
+        'numpy',
+        'scipy',
+        'matplotlib',
+        'appdirs',
+    ],
     package_data={
         'hamstrpy': ['hamstr.stan'],
     },
