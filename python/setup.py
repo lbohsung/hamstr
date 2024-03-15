@@ -56,6 +56,11 @@ setup(
         'matplotlib',
         'appdirs',
     ],
+    extras_require={
+        'tests': [
+            'pyreadr',
+        ],
+    },
     package_data={
         'hamstrpy': ['hamstr.stan'],
     },
