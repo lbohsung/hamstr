@@ -1,5 +1,3 @@
-import warnings
-
 import numpy as np
 
 import pandas as pd
@@ -37,36 +35,14 @@ def calibrate_14C_age(
             age = age_or_dataset
         if error is None:
             error = age_or_dataset[error_name]
-        vals, curve = eval_calibration_curve(
+        x, pdf_at_x = eval_calibration_curve(
             age,
             error,
             thresh=1e-5,
             func=func,
             calibration_curve=curve_dict[curve],
         )
-        return summarize_empirical_pdf(vals, curve)
-        # norm = (
-        #     (vals[1:] - vals[:-1]) * 0.5 * (curve[1:] + curve[:-1])
-        # ).sum()
-        # curve /= norm
-        # mean = (
-        #     (vals[1:] - vals[:-1])
-        #     * 0.5
-        #     * (curve[1:] * vals[1:] + curve[:-1] * vals[:-1])
-        # ).sum()
-        # secmom = (
-        #     (vals[1:] - vals[:-1])
-        #     * 0.5
-        #     * (curve[1:] * vals[1:]**2 + curve[:-1] * vals[:-1]**2)
-        # ).sum()
-        # std = np.sqrt(secmom - mean**2) * (len(vals) - 1) / len(vals)
-        # cdf = np.cumsum(
-        #     (vals[1:] - vals[:-1]) * 0.5 * (curve[1:] + curve[:-1])
-        # )
-        # med_ind = max(np.argwhere(cdf < 0.5).flatten())
-        # median = vals[med_ind]
-
-        # return mean, median, std
+        return summarize_empirical_pdf(x, pdf_at_x)
 
     else:
         for ind, dat in age_or_dataset.iterrows():
@@ -89,40 +65,26 @@ def calibrate_14C_age(
         return age_or_dataset
 
 
-def summarize_empirical_pdf(x, p):
-    inds = np.argsort(x)
-    _p = p[inds]
-    _x = x[inds]
-
-    dx = x[1:] - x[:-1]
-
-    if (max(abs(dx - np.mean(dx))) > np.median(dx) / 100):
-        warnings.warn(
-            "Empirical PDF has variable resolution - this is accounted for, "
-            "but the results may be less reliable.",
-            UserWarning,
-        )
-
-    dx = np.hstack(
-        (
-            [dx[0]],
-            dx,
-        ),
+def summarize_empirical_pdf(x, pdf_at_x):
+    norm = (
+        (x[1:] - x[:-1]) * 0.5 * (pdf_at_x[1:] + pdf_at_x[:-1])
+    ).sum()
+    pdf_at_x /= norm
+    mean = (
+        (x[1:] - x[:-1])
+        * 0.5
+        * (pdf_at_x[1:] * x[1:] + pdf_at_x[:-1] * x[:-1])
+    ).sum()
+    secmom = (
+        (x[1:] - x[:-1])
+        * 0.5
+        * (pdf_at_x[1:] * x[1:]**2 + pdf_at_x[:-1] * x[:-1]**2)
+    ).sum()
+    std = np.sqrt(secmom - mean**2) * (len(x) - 1) / len(x)
+    cdf = np.cumsum(
+        (x[1:] - x[:-1]) * 0.5 * (pdf_at_x[1:] + pdf_at_x[:-1])
     )
-
-    _p *= dx
-    _p /= _p.sum()
-
-    mean = np.sum(_x * _p)
-    M = np.sum(_p > 0)
-    std = np.sqrt(
-        np.sum(
-            _p * (_x - mean)**2
-        )
-        / ((M-1) / M * np.sum(_p))
-    )
-    cdf = np.cumsum(_p)
-    med_ind = np.argmin(np.abs(cdf - 0.5)).flatten()
-    median = _x[med_ind]
+    med_ind = max(np.argwhere(cdf < 0.5).flatten())
+    median = x[med_ind]
 
     return mean, median, std
