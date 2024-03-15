@@ -49,12 +49,16 @@ def calibrate_14C_age(
             try:
                 _, median, std = calibrate_14C_age(
                     dat,
+                    age_name=age_name,
+                    error_name=error_name,
                     curve=dat['curve'],
                     func=func,
                 )
             except KeyError:
                 _, median, std = calibrate_14C_age(
                     dat,
+                    age_name=age_name,
+                    error_name=error_name,
                     curve=curve,
                     func=func,
                 )
