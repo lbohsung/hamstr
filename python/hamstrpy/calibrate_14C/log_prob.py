@@ -44,7 +44,7 @@ def log_prob_t(t, age, error, a=3, b=4, calibration_curve=intcal20):
     return -(a+0.5) * np.log(b + 0.5 * (df / sig)**2)
 
 
-def get_curve(
+def eval_calibration_curve(
     age,
     error,
     thresh=1e-3,

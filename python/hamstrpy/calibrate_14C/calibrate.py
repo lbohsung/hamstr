@@ -4,7 +4,7 @@ import numpy as np
 
 import pandas as pd
 
-from .log_prob import get_curve, log_prob_norm
+from .log_prob import eval_calibration_curve, log_prob_norm
 from .calibration_curves import intcal20, shcal20, marine20
 
 
@@ -37,7 +37,7 @@ def calibrate_14C_age(
             age = age_or_dataset
         if error is None:
             error = age_or_dataset[error_name]
-        vals, curve = get_curve(
+        vals, curve = eval_calibration_curve(
             age,
             error,
             thresh=1e-5,

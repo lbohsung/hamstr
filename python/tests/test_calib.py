@@ -15,7 +15,7 @@ if __name__ == '__main__':
     from matplotlib import pyplot as plt
     from scipy.stats import t
 
-    from hamstrpy.calibrate_14C.log_prob import get_curve
+    from hamstrpy.calibrate_14C.log_prob import eval_calibration_curve
 
     rc_data['t (BP)'] = 1950 - rc_data['t']
     print(rc_data)
@@ -29,7 +29,7 @@ if __name__ == '__main__':
             ind,
             axs.shape,
         )
-        vals, curve = get_curve(
+        vals, curve = eval_calibration_curve(
             rc_data.loc[at, 'age'],
             rc_data.loc[at, 'error'],
         )
