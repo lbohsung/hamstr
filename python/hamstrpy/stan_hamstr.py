@@ -107,7 +107,7 @@ def hamstr(
 
 
 def get_stan_sampler_args(
-    chains=1,
+    chains=4,
     iter=2000,
     warmup=None,
     thin=1,
