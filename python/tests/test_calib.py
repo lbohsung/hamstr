@@ -1,12 +1,12 @@
 import pyreadr
 
-from hamstrpy.calibrate_14C import calibrate_rc_data
+from hamstrpy.calibrate_14C import calibrate_14C_age
 
 rc_data = pyreadr.read_r(
     '../../data/MSB2K.rda',
 )['MSB2K']
 
-calibrate_rc_data(
+calibrate_14C_age(
     rc_data,
 )
 
@@ -16,6 +16,9 @@ if __name__ == '__main__':
     from scipy.stats import t
 
     from hamstrpy.calibrate_14C.log_prob import get_curve
+
+    rc_data['t (BP)'] = 1950 - rc_data['t']
+    print(rc_data)
 
     inds = np.arange(40, step=np.floor(40/6))[0:6]
 
