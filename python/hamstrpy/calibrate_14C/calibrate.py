@@ -63,7 +63,7 @@ def calibrate_14C_age(
                     func=func,
                 )
 
-            age_or_dataset.loc[ind, 't'] = median
+            age_or_dataset.loc[ind, 't'] = 1950 - median
             age_or_dataset.loc[ind, 'dt'] = std
 
         return age_or_dataset
