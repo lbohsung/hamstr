@@ -25,10 +25,10 @@ def get_version(rel_path):
 
 # Not the best solution, but I guess to keep things in one place for R and
 # python this is sufficient for now.
-if not os.path.exists(os.path.join(here, '_README.md')):
+if not os.path.exists(os.path.join(here, 'README.md')):
     copy2(
         os.path.join(here, '../README.md'),
-        os.path.join(here, '_README.md'),
+        os.path.join(here, 'README.md'),
     )
 
 if not os.path.exists(os.path.join(here, 'hamstrpy/hamstr.stan')):
@@ -37,7 +37,7 @@ if not os.path.exists(os.path.join(here, 'hamstrpy/hamstr.stan')):
         os.path.join(here, 'hamstrpy'),
     )
 
-with open('_README.md') as f:
+with open('README.md') as f:
     long_description = f.read()
 
 setup(
