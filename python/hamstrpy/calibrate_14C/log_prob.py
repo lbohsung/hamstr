@@ -48,7 +48,7 @@ def get_curve(
     age,
     error,
     thresh=1e-3,
-    func=log_prob_t,
+    func=log_prob_norm,
     calibration_curve=intcal20,
 ):
     _t = 1950 - calibration_curve['CAL BP'].values

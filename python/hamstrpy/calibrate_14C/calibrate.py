@@ -4,7 +4,7 @@ import numpy as np
 
 import pandas as pd
 
-from .log_prob import get_curve, log_prob_t
+from .log_prob import get_curve, log_prob_norm
 from .calibration_curves import intcal20, shcal20, marine20
 
 
@@ -21,7 +21,7 @@ def calibrate_14C_age(
     age_name='age',
     error_name='error',
     curve='IntCal20',
-    func=log_prob_t,
+    func=log_prob_norm,
 ):
     if isinstance(age_or_dataset, pd.Series):
         single_input = True
