@@ -162,6 +162,8 @@ def get_wts(a, b):
     for i in range(len(intvls)):
         combined = np.unique(np.sort(np.concatenate([gaps[i], intvls[i]])))
         diffs = np.diff(combined)
+        if len(diffs) == 0:
+            diffs = [1]
         range_val = np.ptp(combined)
         wts_i = diffs / range_val if range_val != 0 else diffs
         wts.append(wts_i if len(wts_i) > 1 else np.repeat(wts_i, 2))
@@ -206,6 +208,7 @@ def get_indices(nK=None, brks=None):
         wts1, wts2 = wts_normalized[0, :], wts_normalized[1, :]
     else:
         wts1, wts2 = np.array([]), np.array([])
+
     return {
         'nK': nK,
         'alpha_idx': np.arange(1, np.sum(nK) + 1),
