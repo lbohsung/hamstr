@@ -18,14 +18,16 @@ from rpy2.robjects import (
 class TestCalibration(unittest.TestCase):
     utils = rpackages.importr('utils')
     try:
-        hamstr = rpackages.importr("hamstr")
+        rpackages.importr("hamstr")
     except rpackages.PackageNotInstalledError:
         try:
             remotes = rpackages.importr("remotes")
         except rpackages.PackageNotInstalledError:
             utils.install_packages("remotes")
             remotes = rpackages.importr("remotes")
-            remotes.install_local('../../')
+
+        remotes.install_local('../../')
+        rpackages.importr("hamstr")
 
     r(
         '''
