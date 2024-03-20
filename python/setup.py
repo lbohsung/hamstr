@@ -50,15 +50,18 @@ setup(
     author_email='andrew.dolman@awi.de',
     packages=find_packages(),
     install_requires=[
+        'statsmodels',
         'cmdstanpy',
         'numpy',
         'scipy',
         'matplotlib',
         'appdirs',
+        'arviz',
     ],
     extras_require={
         'tests': [
             'pyreadr',
+            'rpy2',
         ],
     },
     package_data={
