@@ -36,7 +36,7 @@ def make_stan_dat_hamstr(**kwargs):
         args['acc_mean_prior'] = acc_mean
 
     # Sort depth and related arrays
-    sorted_indices = np.argsort(args['depth'])
+    sorted_indices = np.argsort(args['depth'], kind='stable')
     for key in ['depth', 'obs_age', 'obs_err']:
         args[key] = np.array(args[key])[sorted_indices]
 
