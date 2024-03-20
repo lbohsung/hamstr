@@ -31,7 +31,11 @@ def make_stan_dat_hamstr(**kwargs):
             data=d,
             M=statsmodels.robust.norms.HuberT(),
         ).fit()
-        acc_mean = np.round(model_result.params['depth'], 2)
+        # signif equivalent, see https://stackoverflow.com/a/56974893
+        digits = 2 - np.int64(
+            np.ceil(np.log10(np.abs(model_result.params['depth'])))
+        )
+        acc_mean = np.round(model_result.params['depth'], digits)
         acc_mean = 20 if acc_mean <= 0 else acc_mean
         args['acc_mean_prior'] = acc_mean
 
