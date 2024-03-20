@@ -94,8 +94,8 @@ def make_stan_dat_hamstr(**kwargs):
     args['N'] = len(args['depth'])
 
     # Calculate breakpoints and indices
-    brks = GetBrksHalfOffset(args['K_fine'], args['K_factor'])
-    alpha_idx = GetIndices(brks=brks)
+    brks = get_brks_half_offset(args['K_fine'], args['K_factor'])
+    alpha_idx = get_indices(brks=brks)
 
     args["K_tot"] = np.sum(alpha_idx["nK"])
     args['K_fine'] = alpha_idx['nK'][-1]
@@ -155,7 +155,7 @@ def make_stan_dat_hamstr(**kwargs):
     return args
 
 
-def GetWts(a, b):
+def get_wts(a, b):
     intvls = [b[i-1:i+1] for i in range(1, len(b))]
     gaps = [a[(a >= x[0]) & (a <= x[1])] for x in intvls]
     wts = []
@@ -169,7 +169,7 @@ def GetWts(a, b):
     return wts
 
 
-def GetIndices(nK=None, brks=None):
+def get_indices(nK=None, brks=None):
     if brks is None:
         lvl = np.concatenate(
             [np.repeat(i, n) for i, n in enumerate(nK, start=1)]
@@ -189,7 +189,7 @@ def GetIndices(nK=None, brks=None):
     for i, p in enumerate(parent[1:], start=1):
         parent[i] = p + cumNcol[i-1]
         wts = [
-            GetWts(
+            get_wts(
                 np.array(brks[i-1]),
                 np.array(brks[i])
             ) for i in range(1, len(brks))
@@ -219,7 +219,7 @@ def GetIndices(nK=None, brks=None):
     }
 
 
-def GetBrksHalfOffset(K_fine, K_factor):
+def get_brks_half_offset(K_fine, K_factor):
     db_fine = 1 / K_fine
     db = db_fine
     brks = [np.arange(0, 1 + db, db)]
