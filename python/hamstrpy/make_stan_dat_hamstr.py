@@ -101,7 +101,7 @@ def make_stan_dat_hamstr(**kwargs):
     brks = get_brks_half_offset(args['K_fine'], args['K_factor'])
     alpha_idx = get_indices(brks=brks)
 
-    args["K_tot"] = np.sum(alpha_idx["nK"])
+    args['K_tot'] = np.sum(alpha_idx["nK"])
     args['K_fine'] = alpha_idx['nK'][-1]
     args['c'] = list(range(1, args['K_fine'] + 1))
 
@@ -236,20 +236,19 @@ def get_brks_half_offset(K_fine, K_factor):
     while n_sec > 3:
         strt = np.min(brks[-1])
         # end = np.max(brks[-1])
-        n_new = np.ceil((n_sec + 1) / K_factor)
+        n_new = np.int64(np.ceil((n_sec + 1) / K_factor))
         l_new = n_new * K_factor
         l_old = n_sec
         d_new_old = l_new - l_old
+
         if d_new_old % 2 == 0:
             new_strt = strt - db * (d_new_old - 1) / 2
         else:
             new_strt = strt - db * (d_new_old) / 2
-        newbrks = np.arange(
-            new_strt,
-            new_strt + db * K_factor * n_new,
-            db * K_factor,
+        newbrks = np.array(
+            [new_strt + it * db * K_factor for it in range(n_new + 1)]
         )
-        newbrks = np.append(newbrks, new_strt + db * K_factor * n_new)
+
         brks.append(newbrks)
         db = K_factor * db
         n_br = len(newbrks)
