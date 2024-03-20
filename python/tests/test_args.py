@@ -161,6 +161,19 @@ class TestHamstrRun(unittest.TestCase):
                     msg=f'{key} not equal.'
                 )
 
+    def test_bioturbation_args(self):
+        with self.subTest():
+            self.test_keys(
+                model_bioturbation=True,
+                n_ind=5.0,
+            )
+
+    def test_L_prior_sigma(self):
+        with self.subTest():
+            self.test_keys(
+                L_prior_sigma=2,
+            )
+
 
 if __name__ == '__main__':
     unittest.main()
