@@ -36,7 +36,7 @@ def hamstr(
     H_bottom=None,
     sample_posterior=True,
     hamstr_control={},
-    stan_sampler_args={}
+    stan_sampler_args={},
 ):
     if min_age is None:
         min_age = 1950 - datetime.datetime.now().year
