@@ -1,57 +1,72 @@
+import unittest
+import numpy as np
+
 import pyreadr
 
 from hamstrpy.calibrate_14C import calibrate_14C_age
 
-rc_data = pyreadr.read_r(
-    '../../data/MSB2K.rda',
-)['MSB2K']
-
-calibrate_14C_age(
-    rc_data,
+import rpy2.robjects.packages as rpackages
+from rpy2.robjects import (
+    r,
+    globalenv,
+    conversion,
+    default_converter,
+    pandas2ri,
 )
 
+
+class TestCalibration(unittest.TestCase):
+    utils = rpackages.importr('utils')
+    try:
+        hamstr = rpackages.importr("hamstr")
+    except rpackages.PackageNotInstalledError:
+        try:
+            remotes = rpackages.importr("remotes")
+        except rpackages.PackageNotInstalledError:
+            utils.install_packages("remotes")
+            remotes = rpackages.importr("remotes")
+            remotes.install_local('../../')
+
+    r(
+        '''
+        load("../../data/MSB2K.rda")
+
+        MSB2K_cal <- calibrate_14C_age(
+            MSB2K,
+            age.14C = "age",
+            age.14C.se = "error",
+        )
+        '''
+    )
+    with (default_converter + pandas2ri.converter).context():
+        ref_df = conversion.get_conversion().rpy2py(globalenv['MSB2K_cal'])
+
+    rc_data = pyreadr.read_r(
+        '../../data/MSB2K.rda',
+    )['MSB2K']
+
+    calibrate_14C_age(
+        rc_data,
+    )
+
+    def test_age_calibration(self):
+        self.assertTrue(
+            np.allclose(
+                self.ref_df['age.14C.cal'],
+                self.rc_data['t'],
+                rtol=5e-2,
+            )
+        )
+
+    def test_sigma_calibration(self):
+        self.assertTrue(
+            np.allclose(
+                self.ref_df['age.14C.cal.se'],
+                self.rc_data['dt'],
+                rtol=5e-2,
+            )
+        )
+
+
 if __name__ == '__main__':
-    import numpy as np
-    from matplotlib import pyplot as plt
-    from scipy.stats import t
-
-    from hamstrpy.calibrate_14C.log_prob import eval_calibration_curve
-
-    rc_data['t (BP)'] = 1950 - rc_data['t']
-    print(rc_data)
-
-    inds = np.arange(40, step=np.floor(40/6))[0:6]
-
-    fig, axs = plt.subplots(2, 3)
-
-    for ind, at in enumerate(inds):
-        ax_idx = np.unravel_index(
-            ind,
-            axs.shape,
-        )
-        vals, curve = eval_calibration_curve(
-            rc_data.loc[at, 'age'],
-            rc_data.loc[at, 'error'],
-        )
-        norm = (
-            (vals[1:] - vals[:-1]) * 0.5 * (curve[1:] + curve[:-1])
-        ).sum()
-        curve /= norm
-
-        axs[ax_idx].plot(
-            (1950 - vals) / 1000,
-            curve,
-            color='C1',
-        )
-        axs[ax_idx].plot(
-            (1950 - vals) / 1000,
-            t.pdf(
-                vals,
-                df=6,
-                loc=rc_data.loc[at, 't'],
-                scale=rc_data.loc[at, 'dt'],
-            ),
-            color='C0',
-        )
-
-    plt.show()
+    unittest.main()
