@@ -1,10 +1,6 @@
 import unittest
 import numpy as np
 
-from hamstrpy import make_stan_dat_hamstr
-
-
-import rpy2.robjects.packages as rpackages
 from rpy2.robjects import (
     r,
     globalenv,
@@ -14,23 +10,12 @@ from rpy2.robjects import (
     BoolVector,
 )
 
+from hamstrpy import make_stan_dat_hamstr
+from r_import import run_R_import
+
 
 class TestHamstrRun(unittest.TestCase):
-    utils = rpackages.importr('utils')
-    try:
-        rpackages.importr("hamstr")
-        rpackages.importr("rstan")
-
-    except rpackages.PackageNotInstalledError:
-        try:
-            remotes = rpackages.importr("remotes")
-        except rpackages.PackageNotInstalledError:
-            utils.install_packages("remotes")
-            remotes = rpackages.importr("remotes")
-        remotes.install_local('../../')
-
-        rpackages.importr("hamstr")
-        rpackages.importr("rstan")
+    run_R_import()
 
     r(
         '''
