@@ -60,7 +60,6 @@ setup(
     ],
     extras_require={
         'tests': [
-            'pyreadr',
             'rpy2',
         ],
     },

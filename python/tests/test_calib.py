@@ -1,8 +1,6 @@
 import unittest
 import numpy as np
 
-import pyreadr
-
 from rpy2.robjects import (
     r,
     globalenv,
@@ -31,11 +29,8 @@ class TestCalibration(unittest.TestCase):
     )
 
     with (default_converter + pandas2ri.converter).context():
+        rc_data = conversion.get_conversion().rpy2py(globalenv['MSB2K'])
         ref_df = conversion.get_conversion().rpy2py(globalenv['MSB2K_cal'])
-
-    rc_data = pyreadr.read_r(
-        '../../data/MSB2K.rda',
-    )['MSB2K']
 
     calibrate_14C_age(
         rc_data,
