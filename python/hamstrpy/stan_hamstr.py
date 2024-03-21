@@ -38,6 +38,55 @@ def hamstr(
     hamstr_control={},
     stan_sampler_args={},
 ):
+    """ Fit a hamstr age-depth model
+
+    hamstr is used to fit an age-depth model to a set of age-control points.
+    Ages should already be on the desired scale, e.g. calendar ages, and will
+    not be calibrated. The function calibrate_14C_age from the calibrate_14C
+    module can be used to calibrate radiocarbon dates prior to fitting a hamstr
+    model.
+
+    Parameters
+    ----------
+    depth : array-like
+        The depths of observed ages (age control points)
+    obs_age : array-like
+        Observed age at each depth (age control points)
+    obs_err : array-like
+        Error associated with each observed age (1 standard error)
+    min_age : float, optional
+        the minimum age that the first modelled depth can be. Useful if
+        extrapolating above the shallowest age control point to e.g. the
+        surface. So set min_age to the year the core was collected. E.g. for a
+        core collected in 1990, with ages in years BP this would be -40
+        (present = 1950 by convention). The default value is the current year
+        in calendar age BP, calculated using the datetime.now() return value.
+
+    K_fine=None,
+    K_factor=None,
+    top_depth=None,
+    bottom_depth=None,
+    acc_mean_prior=None,
+    acc_shape=1.5,
+    mem_mean=0.5,
+    mem_strength=10,
+    model_bioturbation=False,
+    n_ind=None,
+    L_prior_mean=10,
+    L_prior_shape=2,
+    L_prior_sigma=None,
+    model_displacement=False,
+    D_prior_scale=10,
+    model_hiatus=False,
+    H_top=None,
+    H_bottom=None,
+    sample_posterior=True,
+    hamstr_control={},
+    stan_sampler_args={},
+
+    Returns
+    -------
+    """
     if min_age is None:
         min_age = 1950 - datetime.datetime.now().year
 
