@@ -54,6 +54,7 @@ class TestHamstrRun(unittest.TestCase):
         H_top=None,
         H_bottom=None,
         sample_posterior=True,
+        **kwargs,
     ):
         r(
             f'''
@@ -86,7 +87,13 @@ class TestHamstrRun(unittest.TestCase):
             H_top <- {H_top if H_top is not None else "NULL"}
             H_bottom <- {H_bottom if H_bottom is not None else "NULL"}
             sample_posterior <- {str(sample_posterior).upper()}
-            hamstr_control <- list()
+            hamstr_control <- list(
+                {
+                    ', '.join(
+                        [f'{key} = {value}' for key, value in kwargs.items()]
+                    )
+                }
+            )
             stan_sampler_args <- list()
 
             stan_dat <- hamstr:::make_stan_dat_hamstr()
@@ -121,6 +128,7 @@ class TestHamstrRun(unittest.TestCase):
             H_top=H_top,
             H_bottom=H_bottom,
             sample_posterior=sample_posterior,
+            **kwargs,
         )
 
         for key in stan_dat.keys():
@@ -157,6 +165,15 @@ class TestHamstrRun(unittest.TestCase):
         with self.subTest():
             self.test_keys(
                 L_prior_sigma=2,
+            )
+
+    def test_hamstr_control_kwargs(self):
+        # THIS TEST ONLY WORKS WITH NUMERICAL PARAMATERS!
+        with self.subTest():
+            self.test_keys(
+                nu=8,
+                infl_shape_shape=10,
+                infl_shape_mean=1,
             )
 
 

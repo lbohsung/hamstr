@@ -20,7 +20,7 @@ def make_stan_dat_hamstr(**kwargs):
         the Stan sampler
     """
     args = kwargs.copy()
-    hc_args = {
+    hamstr_control_default = {
         'scale_R': True,
         'nu': 6,
         'scale_shape': True,
@@ -30,7 +30,12 @@ def make_stan_dat_hamstr(**kwargs):
         'infl_shape_shape': 1,
         'infl_shape_mean': 1,
     }
-    args.update(hc_args)
+
+    for key, value in hamstr_control_default.items():
+        try:
+            args[key]
+        except KeyError:
+            args[key] = value
 
     # Calculate acc_mean_prior if not provided
     if args['acc_mean_prior'] is None:
