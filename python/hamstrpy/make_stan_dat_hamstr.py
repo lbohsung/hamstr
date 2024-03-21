@@ -7,6 +7,18 @@ import statsmodels.api as sm
 
 
 def make_stan_dat_hamstr(**kwargs):
+    """ Make the data object required by the Stan sampler
+
+    Parameters
+    ----------
+        **kwargs passed from the hamstr function
+
+    Returns
+    -------
+    dict
+        A dictionary containing the data and paramters to be passed as data to
+        the Stan sampler
+    """
     args = kwargs.copy()
     hc_args = {
         'scale_R': True,
@@ -160,6 +172,20 @@ def make_stan_dat_hamstr(**kwargs):
 
 
 def get_wts(a, b):
+    """ Get weights for parent sections
+
+    Parameters
+    ----------
+    a : array-like
+        The parent breaks
+    b : array-like
+        The child breaks
+
+    Returns
+    -------
+    array
+        The weights
+    """
     intvls = [b[i-1:i+1] for i in range(1, len(b))]
     gaps = [a[(a >= x[0]) & (a <= x[1])] for x in intvls]
     wts = []
@@ -176,6 +202,15 @@ def get_wts(a, b):
 
 
 def get_indices(nK=None, brks=None):
+    """ Get the index structure for the hamstr model from a set of breaks
+
+    Parameters
+    ----------
+    nK : array-like
+        List of number of breaks in each level
+    brks : list of arrays
+        A list of breakpoints in each level
+    """
     if brks is None:
         lvl = np.concatenate(
             [np.repeat(i, n) for i, n in enumerate(nK, start=1)]
@@ -227,6 +262,7 @@ def get_indices(nK=None, brks=None):
 
 
 def get_brks_half_offset(K_fine, K_factor):
+    """ Get the overlapping breaks structure """
     db_fine = 1 / K_fine
     db = db_fine
     brks = [np.arange(0, 1 + db, db)]
@@ -262,6 +298,13 @@ def get_brks_half_offset(K_fine, K_factor):
 
 
 def get_K_factor(K_fine):
+    """ Get the default K_factor
+
+    Parameters
+    ----------
+    K_fine : int
+        THe number of sections at the highest resolution
+    """
     def bar(x, y):
         return abs(y - x**x)
     result = minimize_scalar(
@@ -274,6 +317,25 @@ def get_K_factor(K_fine):
 
 
 def gamma_sigma_shape(mean=None, mode=None, sigma=None, shape=None):
+    """ Convert between paremetrisations of the gamma distribution
+
+    Parameters
+    ----------
+    mean : float
+        The mean of the gamma distribution
+    mode : float
+        The mode of the gamma distribution
+    sigma : float
+        The standard deviation of the gamma distribution
+    shape : float
+        The hape parameter of the gamma distribution
+
+    Returns
+    -------
+    dict
+        A dictionary containing all parameters of the specified gamma
+        distribution
+    """
     if mean is None and mode is None:
         raise ValueError("One of either the mean or mode must be specified")
     if shape is None and sigma is None:
@@ -321,6 +383,7 @@ def gamma_sigma_shape(mean=None, mode=None, sigma=None, shape=None):
 
 
 def get_smooth_i(d, w):
+    """Get indices for smoothing accumulation rate when estimating L """
     w = w / d['delta_c']
     ri = np.arange(-np.floor(w / 2), np.floor(w / 2) + 1, dtype=int)
     mi = np.array([x + ri for x in d['which_c']])
@@ -336,6 +399,18 @@ def get_smooth_i(d, w):
 
 
 def get_inits_hamstr(stan_dat):
+    """ Create random initial values for the hamstr Stan model
+
+    Parameters
+    ----------
+    stan_dat : dict
+        A dictionary of data for the Stan hamstr model
+
+    Returns
+    -------
+    dict
+        A dictionary containing the initial values
+    """
     X = sm.add_constant(stan_dat['depth'])
     model = sm.RLM(stan_dat['obs_age'], X).fit()
     sigma = model.bse[0]
