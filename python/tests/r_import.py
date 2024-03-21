@@ -8,13 +8,20 @@ def run_R_import():
         rpackages.importr("rstan")
 
     except rpackages.PackageNotInstalledError:
+        from rpy2.rinterface_lib.embedded import RRuntimeError
+
         try:
             remotes = rpackages.importr("remotes")
         except rpackages.PackageNotInstalledError:
             utils.install_packages("remotes")
             remotes = rpackages.importr("remotes")
-
-        remotes.install_local('../../')
+        try:
+            remotes.install_local('../../')
+        except RRuntimeError:
+            remotes.install_github(
+                "earthsystemdiagnostics/hamstr",
+                args="--preclean",
+            )
 
         rpackages.importr("hamstr")
         rpackages.importr("rstan")
