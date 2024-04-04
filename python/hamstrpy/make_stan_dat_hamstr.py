@@ -130,7 +130,7 @@ def make_stan_dat_hamstr(**kwargs):
         (args['bottom_depth'] - args['top_depth']) / args['K_fine']
     )
     args['c_depth_bottom'] = (
-        [args['delta_c'] * c for c in args['c']] + args['top_depth']
+        [args['delta_c'] * c + args['top_depth'] for c in args['c']]
     )
     args['c_depth_top'] = np.concatenate(
         [[args['top_depth']], args['c_depth_bottom'][:args['K_fine'] - 1]]
