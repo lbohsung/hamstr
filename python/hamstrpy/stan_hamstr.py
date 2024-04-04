@@ -68,10 +68,10 @@ def hamstr(
         subsequent levels.
     top_depth : float, optional
         The top depth of the desired age-depth model. Must encompass the range
-        of the data. Defaults to the shallowest and deepest data points.
+        of the data. Defaults to the shallowest data points.
     bottom_depth : float, optional
         The bottom depths of the desired age-depth model. Must encompass the
-        range of the data. Defaults to the shallowest and deepest data points.
+        range of the data. Defaults to the deepest data points.
     acc_mean_prior : float, optional
         Hyperparameter for the prior on the overall mean accumulation rate for
         the record. Units are obs_age / depth. E.g. if depth is in cm and age
