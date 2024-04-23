@@ -21,6 +21,8 @@ def calibrate_14C_age(
     curve='IntCal20',
     func=log_prob_norm,
 ):
+    """ Calibrate radiocarbon data using reference curves.
+    """
     if isinstance(age_or_dataset, pd.Series):
         single_input = True
     elif np.isscalar(age_or_dataset):
@@ -70,6 +72,9 @@ def calibrate_14C_age(
 
 
 def summarize_empirical_pdf(x, pdf_at_x):
+    """ Calculate mean, median and standard deviation of an empirical pdf by
+    using trapezoid integration.
+    """
     norm = (
         (x[1:] - x[:-1]) * 0.5 * (pdf_at_x[1:] + pdf_at_x[:-1])
     ).sum()
