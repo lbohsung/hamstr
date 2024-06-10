@@ -161,3 +161,49 @@ def check_rhat(idata_or_summary, rhat, return_failed=False):
         return False
     else:
         return True
+
+
+def get_posterior_acc_rates(idata, return_samples=False, time_per_depth=False):
+    """ Extract the posterior accumulation rates from sampling result
+
+    Parameters
+    ----------
+    idata : arviz.InferenceData
+        The sampling result returned by the hamstr function
+    return_samples : bool, optional
+        If True, the accumulation rate samples are returned instead of mean
+        and standard deviation.
+    time_per_depth : bool, optional
+        If True, return the accumulation rate as it is modeled, i.e. as time
+        per depth. Normally depth per time is returned, as it is more straight-
+        forward to interpret.
+
+    Returns
+    -------
+    array of shape n
+        The modelled dephts, useful for plotting etc.
+    array of shape n
+        The mean posterior accumulation rate at the depth corresponding to the
+        first returned array.
+    array of shape n
+        The standard deviations of the accumulation rate at the depths
+        corresponding to the first returned array.
+    """
+    depths = (
+        idata.observed_data['c_depth_bottom'].values +
+        idata.observed_data['c_depth_top'].values
+    ) / 2.
+
+    acc_rate_tpd = idata.posterior['x'].values
+
+    if time_per_depth:
+        acc_rate = acc_rate_tpd
+    else:
+        acc_rate = 1. / acc_rate_tpd
+
+    acc_rate = acc_rate.reshape(-1, depths.shape[0]).T
+
+    if return_samples:
+        return acc_rate
+
+    return depths, acc_rate.mean(axis=1), acc_rate.std(axis=1)
